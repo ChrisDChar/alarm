@@ -25,9 +25,27 @@ function setAlarm() {
     alarmInterval = setInterval(checkAlarm, 1000);
     isAlarmSet = true;
     
+    // FIXED: Change to 'Alarm Set' and update colors
     setAlarmBtn.textContent = 'Alarm Set';
-    setAlarmBtn.classList.remove('bg-violet-600', 'hover:bg-violet-700');
+    setAlarmBtn.classList.remove('bg-violet-600', 'hover:bg-violet-700', 'bg-amber-600', 'hover:bg-amber-700');
     setAlarmBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+}
+
+function resetAlarm() {
+    alarmAudio.pause();
+    alarmAudio.currentTime = 0;
+    
+    if (alarmInterval) {
+        clearInterval(alarmInterval);
+    }
+    
+    isAlarmSet = false;
+    alarmTime = null;
+    alarmTimeInput.value = '';
+    
+    setAlarmBtn.textContent = 'Set Alarm';
+    setAlarmBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700', 'bg-amber-600', 'hover:bg-amber-700');
+    setAlarmBtn.classList.add('bg-violet-600', 'hover:bg-violet-700');
 }
 
 function checkAlarm() {
@@ -48,14 +66,17 @@ function triggerAlarm() {
     
     clearInterval(alarmInterval);
     isAlarmSet = false;
+    
+    setAlarmBtn.textContent = 'Reset Alarm';
+    setAlarmBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+    setAlarmBtn.classList.add('bg-amber-600', 'hover:bg-amber-700');
 }
 
 function stopAlarm() {
-    alarmAudio.pause();
-    alarmAudio.currentTime = 0;
-    
-    clearInterval(alarmInterval);
-    isAlarmSet = false;
+    if(!alarmAudio.paused) {
+        alarmAudio.pause();
+    }
+    isAlarmSet = true;
     
     setAlarmBtn.textContent = 'Set Alarm';
     setAlarmBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
@@ -63,6 +84,8 @@ function stopAlarm() {
 }
 
 function continueAlarm() {
+    if (!alarmTime) return;
+
     alarmAudio.pause();
     alarmAudio.currentTime = 0;
     
@@ -74,16 +97,29 @@ function continueAlarm() {
         minutes: snoozeTime.getMinutes()
     };
     
-    if (alarmInterval) {
-        clearInterval(alarmInterval);
-    }
+    if (alarmInterval) clearInterval(alarmInterval);
     alarmInterval = setInterval(checkAlarm, 1000);
-    isAlarmSet = true;
-}
+    isAlarmSet = true;}
 
-setAlarmBtn.addEventListener('click', setAlarm);
-stopBtn.addEventListener('click', stopAlarm);
-continueBtn.addEventListener('click', continueAlarm);
+setAlarmBtn.addEventListener('click', function() {
+    if (setAlarmBtn.textContent === 'Reset Alarm') {
+        resetAlarm();
+    } else {
+        setAlarm();
+    }
+});
+stopBtn.addEventListener('click', function() {
+    if (!alarmAudio.paused) {
+        alarmAudio.pause();
+        console.log("Alarm paused");
+    }
+});
+continueBtn.addEventListener('click', function() {
+    if (alarmAudio.paused) {
+        alarmAudio.play();
+        console.log("Alarm resumed");
+    }
+});
 
 
 function formatTime(hours, minutes) {
