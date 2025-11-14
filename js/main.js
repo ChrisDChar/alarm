@@ -25,7 +25,6 @@ function setAlarm() {
     alarmInterval = setInterval(checkAlarm, 1000);
     isAlarmSet = true;
     
-    // FIXED: Change to 'Alarm Set' and update colors
     setAlarmBtn.textContent = 'Alarm Set';
     setAlarmBtn.classList.remove('bg-violet-600', 'hover:bg-violet-700', 'bg-amber-600', 'hover:bg-amber-700');
     setAlarmBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
